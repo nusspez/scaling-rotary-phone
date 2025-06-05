@@ -28,7 +28,7 @@ provider "aws" {
 # --- 1. Create VPC ---
 
 module "vpc" {
-  source = "./modules/vpc" # Ruta a la carpeta del módulo
+  source = "./modules/VPC" # Ruta a la carpeta del módulo
 
   # --- Pasando las variables específicas para us-west-2 ---
   project_name         = "mi-app-produccion"
