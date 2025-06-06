@@ -45,7 +45,8 @@ variable "bastion_ami_id" {
 }
 
 variable "bastion_key_name" {
-  description = "key-omar"
+  description = "key name"
+  default = "key-omar"
   type        = string
 }
 
