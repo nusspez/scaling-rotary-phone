@@ -9,18 +9,18 @@ resource "aws_security_group" "app" {
     from_port       = var.app_port
     to_port         = var.app_port
     protocol        = "tcp"
-    security_groups = [var.alb_security_group_id] # <-- Conexión con el módulo ALB
+    security_groups = [var.alb_security_group_id]
   }
 
-  # Regla de entrada: Permitir SSH (puerto 22) SOLO desde el Bastion.
+  # Regla de entrada: Permitir SSH SOLO desde el Bastion.
   ingress {
-    from_port       = 22
-    to_port         = 22
+    from_port       = 2444 # <-- CAMBIO: Puerto actualizado a 2444
+    to_port         = 2444 # <-- CAMBIO: Puerto actualizado a 2444
     protocol        = "tcp"
-    security_groups = [var.bastion_security_group_id] # <-- Conexión con el módulo Bastion
+    security_groups = [var.bastion_security_group_id]
   }
 
-  # Regla de salida: Permitir todo el tráfico saliente (para actualizaciones vía NAT Gateway).
+  # Regla de salida: Permitir todo el tráfico saliente.
   egress {
     from_port   = 0
     to_port     = 0
@@ -34,22 +34,23 @@ resource "aws_security_group" "app" {
 }
 
 # --- 2. Plantilla de Lanzamiento (Launch Template) ---
-# Define la configuración de las instancias que creará el Auto Scaling Group.
 resource "aws_launch_template" "app" {
   name_prefix   = "${var.project_name}-app-"
-  image_id      = data.aws_ami.amazon_linux_2.id # Usa la AMI de Amazon Linux 2 encontrada abajo
+  image_id      = data.aws_ami.ubuntu.id # <-- CAMBIO: Usa la AMI de Ubuntu encontrada abajo
   instance_type = var.instance_type
   key_name      = var.key_name
 
   vpc_security_group_ids = [aws_security_group.app.id]
 
-  # Script que se ejecuta al iniciar cada instancia para instalar y arrancar Nginx
+  # CAMBIO: Script actualizado para instalar Nginx en Ubuntu y crear un HTML personalizado.
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              yum update -y
-              amazon-linux-extras install nginx1 -y
+              apt-get update -y
+              apt-get install -y nginx
               systemctl start nginx
               systemctl enable nginx
+              INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+              echo "<h1>Hello from instance: $INSTANCE_ID</h1>" > /var/www/html/index.html
               EOF
   )
 
@@ -59,27 +60,22 @@ resource "aws_launch_template" "app" {
 }
 
 # --- 3. Auto Scaling Group (ASG) ---
-# Gestiona el ciclo de vida de las instancias.
+# (Sin cambios en este recurso)
 resource "aws_autoscaling_group" "app" {
-  name_prefix = "${var.project_name}-asg-"
-  
-  # Tamaño del grupo
+  name_prefix      = "${var.project_name}-asg-"
   desired_capacity = 2
   min_size         = 1
   max_size         = 3
 
-  vpc_zone_identifier = var.subnet_ids # Las subnets PRIVADAS donde se lanzarán
+  vpc_zone_identifier = var.subnet_ids
 
-  # Conexión con el Launch Template
   launch_template {
     id      = aws_launch_template.app.id
     version = "$Latest"
   }
 
-  # Conexión con el Load Balancer
   target_group_arns = [var.target_group_arn]
 
-  # Etiqueta las instancias que crea
   tag {
     key                 = "Name"
     value               = "${var.project_name}-app-instance"
@@ -87,13 +83,18 @@ resource "aws_autoscaling_group" "app" {
   }
 }
 
-# --- Data Source para encontrar la última AMI de Amazon Linux 2 ---
-data "aws_ami" "amazon_linux_2" {
+# --- CAMBIO: Data Source para encontrar la última AMI de Ubuntu 22.04 ---
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["amazon"]
+  owners      = ["099720109477"] # ID Canónico de Canonical
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
