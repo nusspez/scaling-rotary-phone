@@ -78,6 +78,6 @@ variable "app_server_instance_type" {
 }
 
 variable "app_server_key_name" {
-  description = "Nombre del Key Pair para las instancias de aplicación (puede ser diferente al del bastion)."
+  description = "key-omar"
   type        = string
 }
