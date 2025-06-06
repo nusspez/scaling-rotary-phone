@@ -55,3 +55,10 @@ variable "bastion_allowed_ssh_cidr" {
   type        = list(string)
   default     = ["0.0.0.0/0"] # ADVERTENCIA: Permite CUALQUIER IP. Debe ser sobreescrito.
 }
+
+# --- Variables del Módulo de App ---
+variable "app_port" {
+  description = "Puerto en el que escuchan los servidores Nginx."
+  type        = number
+  default     = 80
+}

@@ -55,5 +55,14 @@ module "bastion" {
 }
 # --- 3. Crear Balanceador de Carga (próximo paso) ---
 
+# --- 3. Crear Balanceador de Carga ---
+module "load_balancer" {
+  source = "./modules/load_balancer"
+
+  project_name = var.project_name
+  vpc_id       = module.vpc.vpc_id
+  subnet_ids   = module.vpc.public_subnet_ids # El ALB se despliega en las subnets públicas
+  app_port     = var.app_port
+}
 
 # --- 4. Crear Servidores de Aplicación (próximo paso) ---
