@@ -1,7 +1,7 @@
 # --- 1. Grupo de Seguridad para los Servidores de Aplicación ---
 resource "aws_security_group" "app" {
   name        = "${var.project_name}-app-sg"
-  description = "Permite tráfico desde el ALB y SSH desde el Bastion"
+  description = "Permite trafico desde el ALB y SSH desde el Bastion"
   vpc_id      = var.vpc_id
 
   # Regla de entrada: Permitir tráfico en el puerto de la app SOLO desde el ALB.
