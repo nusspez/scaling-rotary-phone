@@ -1,5 +1,3 @@
-# /variables.tf
-
 # --- Variables Generales del Proyecto ---
 variable "project_name" {
   description = "Nombre base para todos los recursos."
@@ -39,16 +37,16 @@ variable "private_subnet_cidrs" {
 }
 
 
+# --- Variables del Módulo Bastion ---
 variable "bastion_ami_id" {
   description = "El ID de la AMI para las instancias bastion."
   type        = string
-  default     = "ami-03f65b8614a860a5b" # Amazon Linux 2 para us-west-2 (verifica la más reciente)
+  default     = "ami-03f65b8614a860a5b"
 }
 
 variable "bastion_key_name" {
   description = "Nombre del Key Pair de EC2 para el acceso SSH a los bastiones."
   type        = string
-  # No hay default, ya que es específico de cada usuario. Terraform lo pedirá si no se define.
 }
 
 variable "bastion_allowed_ssh_cidr" {

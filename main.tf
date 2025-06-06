@@ -41,19 +41,17 @@ module "vpc" {
 }
 
 # --- 2. Crear Servidores Bastion ---
+module "bastion" { 
+  source = "./modules/bastion_server" 
 
-module "./modules/bastion_server" {
-  source       = "./modules/bastion"
-  project_name = var.project_name
-  vpc_id       = module.vpc.vpc_id
-  subnet_ids   = module.vpc.public_subnet_ids
-
-  # --- Usando las nuevas variables raíz ---
+  # Conexión a outputs de VPC y variables raíz
+  project_name     = var.project_name
+  vpc_id           = module.vpc.vpc_id
+  subnet_ids       = module.vpc.public_subnet_ids
   ami_id           = var.bastion_ami_id
   key_name         = var.bastion_key_name
   allowed_ssh_cidr = var.bastion_allowed_ssh_cidr
 }
-
 
 # --- 3. Crear Balanceador de Carga (próximo paso) ---
 
