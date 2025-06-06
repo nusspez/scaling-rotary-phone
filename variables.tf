@@ -62,3 +62,15 @@ variable "app_port" {
   type        = number
   default     = 80
 }
+
+# --- Variables del Módulo App Servers ---
+variable "app_server_instance_type" {
+  description = "Tipo de instancia para los servidores de aplicación."
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "app_server_key_name" {
+  description = "Nombre del Key Pair para las instancias de aplicación (puede ser diferente al del bastion)."
+  type        = string
+}
