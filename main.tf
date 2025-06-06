@@ -100,3 +100,13 @@ module "eks_cluster" {
   node_group_desired_size     = var.eks_node_group_desired_size
   # node_group_min_size y node_group_max_size usarán los defaults del módulo eks_cluster
 }
+
+# --- 6. Desplegar Add-ons de Kubernetes ---
+module "kubernetes_addons" {
+  source = "./modules/kubernetes_addons"
+
+  # Pasamos las salidas del módulo EKS como entradas a este módulo
+  cluster_name                       = module.eks_cluster.cluster_name
+  cluster_endpoint                   = module.eks_cluster.cluster_endpoint
+  cluster_certificate_authority_data = module.eks_cluster.cluster_certificate_authority_data
+}
