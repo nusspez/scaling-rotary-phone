@@ -74,6 +74,6 @@ variable "app_server_key_name" {
 variable "app_server_instance_type" {
   description = "Tipo de instancia para los servidores de aplicación."
   type        = string
-  default     = "t2.micro"
+  default     = "t3.small" # <-- CAMBIO: Actualizado al valor requerido
 }
 
