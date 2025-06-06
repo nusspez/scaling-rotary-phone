@@ -11,7 +11,7 @@ module "eks" {
   # Configuración del grupo de nodos gestionado por EKS
   eks_managed_node_groups = {
     main_nodes = {
-      name           = "${var.project_name}-node-group"
+      name           = "${var.project_name}-ng"
       instance_types = var.node_group_instance_types
       min_size       = var.node_group_min_size
       max_size       = var.node_group_max_size
