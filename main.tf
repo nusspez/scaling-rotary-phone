@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.52.0"
+      version = "~> 5.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -80,4 +80,23 @@ module "app_servers" {
   target_group_arn          = module.load_balancer.target_group_arn
   alb_security_group_id     = module.load_balancer.alb_security_group_id
   bastion_security_group_id = module.bastion.bastion_security_group_id
+}
+
+
+# --- 5. Crear Clúster EKS ---
+module "eks_cluster" {
+  source = "./modules/eks_cluster"
+
+  project_name = var.project_name
+  region       = var.region
+  vpc_id       = module.vpc.vpc_id
+  # Importante: Los nodos EKS deben ir en subnets que tengan acceso a internet
+  # vía NAT Gateway si son privadas, o que sean públicas si no usas NAT para ellos.
+  # Para este ejemplo, usaremos las subnets privadas que ya tienen NAT.
+  private_subnet_ids = module.vpc.private_subnet_ids
+
+  cluster_version             = var.eks_cluster_version
+  node_group_instance_types   = var.eks_node_group_instance_types
+  node_group_desired_size     = var.eks_node_group_desired_size
+  # node_group_min_size y node_group_max_size usarán los defaults del módulo eks_cluster
 }
