@@ -4,6 +4,7 @@
 provider "kubernetes" {
   host                   = var.cluster_endpoint
   cluster_ca_certificate = base64decode(var.cluster_certificate_authority_data)
+  token = data.aws_eks_cluster_auth.cluster.token
 
   # La autenticación se obtiene automáticamente de tu configuración de AWS CLI
   # (del comando 'aws eks update-kubeconfig' que ejecutaste antes)
@@ -42,7 +43,7 @@ resource "helm_release" "ingress_nginx" {
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
   namespace  = kubernetes_namespace.ingress_nginx.metadata[0].name
-  version    = "4.10.1" # Es bueno fijar una versión del chart
+  version    = "4.10.1"
 
   # Espera a que el namespace esté creado antes de intentar instalar
   depends_on = [kubernetes_namespace.ingress_nginx]
