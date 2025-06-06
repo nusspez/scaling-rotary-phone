@@ -8,15 +8,8 @@ data "aws_eks_cluster_auth" "cluster" {
 provider "kubernetes" {
   host                   = var.cluster_endpoint
   cluster_ca_certificate = base64decode(var.cluster_certificate_authority_data)
-  # ¡Aquí usamos el token directamente!
   token                  = data.aws_eks_cluster_auth.cluster.token
 
-  # Ya no necesitas el bloque 'exec' porque el token se proporciona directamente.
-  # exec {
-  #   api_version = "client.authentication.k8s.io/v1beta1"
-  #   command     = "aws"
-  #   args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
-  # }
 }
 
 # El proveedor de Helm utiliza la configuración del proveedor de Kubernetes.
@@ -24,15 +17,9 @@ provider "helm" {
   kubernetes {
     host                   = var.cluster_endpoint
     cluster_ca_certificate = base64decode(var.cluster_certificate_authority_data)
-    # ¡Aquí también usamos el token directamente!
     token                  = data.aws_eks_cluster_auth.cluster.token
 
-    # Ya no necesitas el bloque 'exec' aquí tampoco.
-    # exec {
-    #   api_version = "client.authentication.k8s.io/v1beta1"
-    #   command     = "aws"
-    #   args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
-    # }
+
   }
 }
 # --- Instalación del Nginx Ingress Controller ---
