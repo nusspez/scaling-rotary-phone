@@ -14,10 +14,10 @@ terraform {
   required_version = ">= 1.1.0"
 
   cloud {
-    organization = "REPLACE_ME" # <-- No olvides reemplazar esto
+    organization = "peznus"
 
     workspaces {
-      name = "gh-actions-demo"
+      name = "github-actions"
     }
   }
 }
