@@ -29,3 +29,8 @@ output "id_grupo_seguridad_bastion" {
   description = "El ID del grupo de seguridad de los bastiones. Útil para otros módulos."
   value       = module.bastion.bastion_security_group_id
 }
+
+output "url_de_la_aplicacion" {
+  description = "La URL pública para acceder a la aplicación a través del balanceador."
+  value       = module.load_balancer.alb_dns_name
+}
