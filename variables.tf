@@ -1,5 +1,3 @@
-# /variables.tf
-
 # --- Variables Generales del Proyecto ---
 variable "project_name" {
   description = "Nombre base para todos los recursos."
@@ -39,3 +37,21 @@ variable "private_subnet_cidrs" {
 }
 
 
+# --- Variables del Módulo Bastion ---
+variable "bastion_instance_type" {
+  description = "Tipo de instancia para los bastiones."
+  type        = string
+  default     = "t3.small" # <- Requisito
+}
+
+variable "bastion_key_name" {
+  description = "key name"
+  default = "key-omar"
+  type        = string
+}
+
+variable "bastion_allowed_ssh_cidr" {
+  description = "Lista de IPs en formato CIDR que pueden acceder por SSH a los bastiones."
+  type        = list(string)
+  default     = ["0.0.0.0/0"] # ADVERTENCIA: Permite CUALQUIER IP. Debe ser sobreescrito.
+}
