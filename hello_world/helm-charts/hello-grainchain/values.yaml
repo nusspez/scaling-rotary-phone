@@ -1,0 +1,25 @@
+# Valores por defecto para el chart hello-grainchain.
+
+replicaCount: 2 # Cuántos pods de tu aplicación quieres ejecutar.
+
+image:
+  # REEMPLAZA 'tu-usuario-dockerhub' con tu nombre de usuario real.
+  repository: tu-usuario-dockerhub/hello-grainchain
+  pullPolicy: IfNotPresent
+  # La etiqueta de la imagen a usar. Por defecto es la versión del chart.
+  tag: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx" # Importante: debe coincidir con tu Ingress Controller
+  hosts:
+    - host: hello.example.com # Un host de ejemplo, puedes cambiarlo.
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+# Aquí puedes añadir más configuraciones como recursos, etc.
