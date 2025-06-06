@@ -62,3 +62,18 @@ variable "app_port" {
   type        = number
   default     = 80
 }
+
+# --- Variables del Módulo de load balancer---
+variable "app_server_key_name" {
+  description = "key name"
+  default = "key-omar"
+  type        = string
+}
+
+# --- Variables del Módulo App Servers ---
+variable "app_server_instance_type" {
+  description = "Tipo de instancia para los servidores de aplicación."
+  type        = string
+  default     = "t2.micro"
+}
+

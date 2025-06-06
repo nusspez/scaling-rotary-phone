@@ -66,3 +66,18 @@ module "load_balancer" {
 }
 
 # --- 4. Crear Servidores de Aplicación (próximo paso) ---
+module "app_servers" {
+  source = "./modules/app_servers"
+
+  project_name      = var.project_name
+  vpc_id            = module.vpc.vpc_id
+  subnet_ids        = module.vpc.private_subnet_ids # <-- Desplegados en subnets privadas
+  instance_type     = var.app_server_instance_type
+  key_name          = var.app_server_key_name
+  app_port          = var.app_port
+
+  # --- Conectando todas las piezas ---
+  target_group_arn          = module.load_balancer.target_group_arn
+  alb_security_group_id     = module.load_balancer.alb_security_group_id
+  bastion_security_group_id = module.bastion.bastion_security_group_id
+}
