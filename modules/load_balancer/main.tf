@@ -1,7 +1,7 @@
 # --- 1. Grupo de Seguridad para el Balanceador de Carga ---
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
-  description = "Permite trafico web entrante al ALB"
+  description = "Permite trafico web entrante al ALB "
   vpc_id      = var.vpc_id
 
   # Regla de entrada: Permitir HTTP desde cualquier lugar
