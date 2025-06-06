@@ -1,41 +1,75 @@
-# Nombre del workflow que aparecerá en la pestaña "Actions" de GitHub
-name: Build and Push Docker Image
+# .github/workflows/build-push-docker.yml
 
-# Disparador: Este workflow se ejecutará cada vez que hagas un 'push' a la rama 'main'
+name: Build, Push, and Deploy to EKS
+
+# This workflow runs on pushes to the main branch
 on:
   push:
     branches: [ "main" ]
-    # Opcional: Para optimizar, solo se ejecuta si hay cambios en la carpeta 'app' o en el Dockerfile
-    paths:
-      - 'app/**'
-      - 'Dockerfile'
 
 jobs:
-  # Definimos un único trabajo (job) llamado 'build-and-push'
+  # --- Job 1: Build and Push Docker Image (No changes here) ---
   build-and-push:
-    # El trabajo se ejecutará en una máquina virtual de Ubuntu proporcionada por GitHub
     runs-on: ubuntu-latest
-
     steps:
-      # Paso 1: Descarga una copia de tu repositorio en el corredor (runner)
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Paso 2: Inicia sesión en Docker Hub de forma segura
-      # Usa los secrets que configuramos en los ajustes del repositorio
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Paso 3: Construye la imagen Docker y la sube a Docker Hub
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: . # El contexto de construcción es la raíz del repo
-          file: ./Dockerfile # La ruta a tu Dockerfile
-          push: true # Le decimos que sí, que suba la imagen después de construirla
-          tags: | # Le asignamos dos etiquetas a la imagen
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hello-grainchain:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/hello-grainchain:${{ github.sha }}
+
+  # --- Job 2: Deploy to EKS using Helm (New job) ---
+  deploy:
+    runs-on: ubuntu-latest
+    # This job depends on the 'build-and-push' job completing successfully
+    needs: build-and-push
+    # This job ONLY runs if the push was to the 'main' branch
+    if: github.ref == 'refs/heads/main'
+
+    permissions:
+      id-token: write # Required for AWS OIDC authentication
+      contents: read  # Required to checkout the repository
+
+    steps:
+      # 1. Checks out your repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configures AWS credentials using the OIDC role
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::ACCOUNT_ID:role/YOUR_GITHUB_ACTIONS_ROLE_NAME # <-- REEMPLAZA CON TU ARN DE ROL
+          aws-region: us-west-2 # Or your region variable
+
+      # 3. Sets up Helm
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.15.0' # Specify a Helm version
+
+      # 4. Configures kubectl to connect to the EKS cluster
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-west-2
+
+      # 5. Deploys the application using Helm
+      - name: Deploy application with Helm
+        run: |
+          helm upgrade --install hello-release ./helm-charts/hello-grainchain/ \
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/hello-grainchain \
+            --set image.tag=${{ github.sha }} \
+            --wait

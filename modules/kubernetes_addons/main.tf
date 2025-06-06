@@ -47,3 +47,24 @@ resource "helm_release" "ingress_nginx" {
   # Espera a que el namespace esté creado antes de intentar instalar
   depends_on = [kubernetes_namespace.ingress_nginx]
 }
+
+# --- Instalación del Stack de Monitoreo (Prometheus + Grafana) ---
+
+# Creamos un namespace dedicado para el monitoreo
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+}
+
+# Usamos el recurso helm_release para instalar el chart 'kube-prometheus-stack'
+resource "helm_release" "prometheus_stack" {
+  name       = "prometheus-stack"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  namespace  = kubernetes_namespace.monitoring.metadata[0].name
+  version    = "58.1.0" # Es bueno fijar una versión estable del chart
+
+  # Espera a que el namespace esté creado antes de intentar instalar
+  depends_on = [kubernetes_namespace.monitoring]
+}
