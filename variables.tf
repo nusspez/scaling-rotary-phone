@@ -38,10 +38,10 @@ variable "private_subnet_cidrs" {
 
 
 # --- Variables del Módulo Bastion ---
-variable "bastion_ami_id" {
-  description = "El ID de la AMI para las instancias bastion."
+variable "bastion_instance_type" {
+  description = "Tipo de instancia para los bastiones."
   type        = string
-  default     = "ami-03f65b8614a860a5b"
+  default     = "t3.small" # <- Requisito
 }
 
 variable "bastion_key_name" {

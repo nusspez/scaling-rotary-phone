@@ -1,13 +1,31 @@
+# modules/bastion/main.tf
+
+# NUEVO: Busca automáticamente la AMI más reciente de Ubuntu 22.04 LTS
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # ID Canónico de la cuenta de Canonical (dueños de Ubuntu)
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 # --- 1. Grupo de Seguridad para los Bastiones ---
 resource "aws_security_group" "bastion" {
   name        = "${var.project_name}-bastion-sg"
   description = "Permite acceso SSH al Bastion Host"
   vpc_id      = var.vpc_id
 
-  # Regla de entrada: Permitir SSH (puerto 22) solo desde la IP especificada.
+  # Regla de entrada: Permitir SSH solo desde la IP especificada
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 2422 # <-- CAMBIO: Puerto actualizado a 2422
+    to_port     = 2422 # <-- CAMBIO: Puerto actualizado a 2422
     protocol    = "tcp"
     cidr_blocks = var.allowed_ssh_cidr
   }
@@ -26,18 +44,27 @@ resource "aws_security_group" "bastion" {
 }
 
 # --- 2. Instancias EC2 para los Bastiones ---
-# Se creará una instancia en cada subnet pública proporcionada.
 resource "aws_instance" "bastion" {
   count = length(var.subnet_ids)
 
-  ami                         = var.ami_id
-  instance_type               = var.instance_type
-  key_name                    = var.key_name
-  subnet_id                   = var.subnet_ids[count.index]
-  vpc_security_group_ids      = [aws_security_group.bastion.id]
-  associate_public_ip_address = true # Necesitamos una IP pública para acceder desde internet
+  # Usa la AMI encontrada o la especificada en las variables
+  ami                    = var.ami_id != "" ? var.ami_id : data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  subnet_id              = var.subnet_ids[count.index]
+  vpc_security_group_ids = [aws_security_group.bastion.id]
+  # CAMBIO: Se elimina 'associate_public_ip_address', ahora se gestiona con EIP
 
   tags = {
     Name = "${var.project_name}-bastion-${count.index + 1}"
+  }
+}
+
+# --- 3. IP Elástica para cada Bastion ---
+resource "aws_eip" "bastion" {
+  count    = length(var.subnet_ids)
+  instance = aws_instance.bastion[count.index].id
+  tags = {
+    Name = "${var.project_name}-bastion-eip-${count.index + 1}"
   }
 }

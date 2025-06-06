@@ -1,3 +1,5 @@
+# modules/bastion/variables.tf
+
 variable "project_name" {
   description = "Nombre del proyecto para etiquetar los recursos."
   type        = string
@@ -16,14 +18,13 @@ variable "subnet_ids" {
 variable "instance_type" {
   description = "El tipo de instancia para los bastiones."
   type        = string
-  default     = "t2.micro"
+  default     = "t3.small" # <- Valor por defecto actualizado
 }
 
 variable "ami_id" {
-  description = "El ID de la AMI para los bastiones (ej. Amazon Linux 2)."
+  description = "Opcional: ID de la AMI a usar. Si se deja en blanco, se buscará la última de Ubuntu 22.04."
   type        = string
-  # Nota: Es buena práctica buscar el AMI más reciente para tu región.
-  # Para us-west-2 (Oregon) puedes usar 'ami-03f65b8614a860a5b' o buscar uno nuevo.
+  default     = "" # <- Se deja en blanco para usar la búsqueda automática
 }
 
 variable "key_name" {
@@ -32,7 +33,6 @@ variable "key_name" {
 }
 
 variable "allowed_ssh_cidr" {
-  description = "Bloque CIDR de la IP desde la cual se permitirá el acceso SSH. ¡Debe ser tu IP pública!"
+  description = "Bloque CIDR de la IP desde la cual se permitirá el acceso SSH."
   type        = list(string)
-  default     = ["0.0.0.0/0"] # ADVERTENCIA: Esto permite acceso desde CUALQUIER IP. Cámbialo por tu IP.
 }
