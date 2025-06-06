@@ -45,7 +45,7 @@ variable "bastion_ami_id" {
 }
 
 variable "bastion_key_name" {
-  description = "Nombre del Key Pair de EC2 para el acceso SSH a los bastiones."
+  description = "key-omar"
   type        = string
 }
 
