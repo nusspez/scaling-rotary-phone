@@ -79,5 +79,6 @@ variable "app_server_instance_type" {
 
 variable "app_server_key_name" {
   description = "key-omar"
+  default="key-omar"
   type        = string
 }
