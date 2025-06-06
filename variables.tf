@@ -76,9 +76,3 @@ variable "app_server_instance_type" {
   type        = string
   default     = "t2.micro"
 }
-
-variable "app_server_key_name" {
-  description = "key-omar"
-  default="key-omar"
-  type        = string
-}
