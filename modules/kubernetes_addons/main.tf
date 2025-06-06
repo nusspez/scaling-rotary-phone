@@ -1,18 +1,22 @@
 # --- Configuración de Proveedores para Kubernetes ---
 
+data "aws_eks_cluster_auth" "cluster" {
+  name = var.cluster_name
+}
+
 # El proveedor de Kubernetes usa los datos del clúster para saber a dónde conectarse.
 provider "kubernetes" {
   host                   = var.cluster_endpoint
   cluster_ca_certificate = base64decode(var.cluster_certificate_authority_data)
-  token = data.aws_eks_cluster_auth.cluster.token
+  # ¡Aquí usamos el token directamente!
+  token                  = data.aws_eks_cluster_auth.cluster.token
 
-  # La autenticación se obtiene automáticamente de tu configuración de AWS CLI
-  # (del comando 'aws eks update-kubeconfig' que ejecutaste antes)
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
-  }
+  # Ya no necesitas el bloque 'exec' porque el token se proporciona directamente.
+  # exec {
+  #   api_version = "client.authentication.k8s.io/v1beta1"
+  #   command     = "aws"
+  #   args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+  # }
 }
 
 # El proveedor de Helm utiliza la configuración del proveedor de Kubernetes.
@@ -20,14 +24,17 @@ provider "helm" {
   kubernetes {
     host                   = var.cluster_endpoint
     cluster_ca_certificate = base64decode(var.cluster_certificate_authority_data)
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
-    }
+    # ¡Aquí también usamos el token directamente!
+    token                  = data.aws_eks_cluster_auth.cluster.token
+
+    # Ya no necesitas el bloque 'exec' aquí tampoco.
+    # exec {
+    #   api_version = "client.authentication.k8s.io/v1beta1"
+    #   command     = "aws"
+    #   args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+    # }
   }
 }
-
 # --- Instalación del Nginx Ingress Controller ---
 
 # Creamos un namespace dedicado para el Ingress Controller
