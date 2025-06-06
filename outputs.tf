@@ -34,3 +34,14 @@ output "url_de_la_aplicacion" {
   description = "La URL pública para acceder a la aplicación a través del balanceador."
   value       = module.load_balancer.alb_dns_name
 }
+
+# --- Salidas del Módulo EKS Cluster ---
+output "eks_cluster_name" {
+  description = "Nombre del clúster EKS creado."
+  value       = module.eks_cluster.cluster_name
+}
+
+output "eks_cluster_endpoint" {
+  description = "Endpoint del servidor API del clúster EKS."
+  value       = module.eks_cluster.cluster_endpoint
+}
