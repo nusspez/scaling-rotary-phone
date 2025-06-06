@@ -20,5 +20,6 @@ output "cluster_oidc_issuer_url" {
 
 output "eks_managed_node_groups_iam_role_arn" {
   description = "ARN del rol IAM para los grupos de nodos gestionados por EKS."
-  value       = module.eks.eks_managed_node_group_iam_role_arns["main_nodes"] 
+  # Accedemos al mapa de 'node groups', luego a la entrada 'main_nodes', y finalmente a su atributo 'iam_role_arn'
+  value       = module.eks.eks_managed_node_groups["main_nodes"].iam_role_arn
 }
