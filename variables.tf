@@ -95,3 +95,15 @@ variable "eks_node_group_desired_size" {
   type        = number
   default     = 2
 }
+
+variable "eks_node_group_min_size" { # <--- ¡NUEVA VARIABLE!
+  description = "Tamaño mínimo de los nodos en el grupo de EKS."
+  type        = number
+  default     = 1
+}
+
+variable "eks_node_group_max_size" { # <--- ¡NUEVA VARIABLE!
+  description = "Tamaño máximo de los nodos en el grupo de EKS."
+  type        = number
+  default     = 3
+}
