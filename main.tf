@@ -83,20 +83,20 @@ module "app_servers" {
 }
 
 
-# --- 5. Crear Clúster EKS ---
 module "eks_cluster" {
   source = "./modules/eks_cluster"
 
-  project_name = var.project_name # <-- var.project_name del root
-  region = var.region             # <-- var.region del root
-  vpc_id = module.vpc.vpc_id      # <-- salida del módulo VPC
-  private_subnet_ids = module.vpc.private_subnet_ids # <-- salida del módulo VPC
+  project_name       = var.project_name
+  region             = var.region
+  vpc_id             = module.vpc.vpc_id # Asegúrate que module.vpc está definido y tiene estas salidas
+  private_subnet_ids = module.vpc.private_subnet_ids # Asegúrate que module.vpc tiene estas salidas
 
-  eks_cluster_version          = var.eks_cluster_version            # <-- var.eks_cluster_version del root
-  eks_node_group_instance_types = var.eks_node_group_instance_types # <-- var.eks_node_group_instance_types del root
-  eks_node_group_desired_size   = var.eks_node_group_desired_size   # <-- var.eks_node_group_desired_size del root
-  eks_node_group_min_size       = var.eks_node_group_min_size       # <-- var.eks_node_group_min_size del root
-  eks_node_group_max_size       = var.eks_node_group_max_size       # <-- var.eks_node_group_max_size del root
+  # Pasando los valores de tus variables raíz a las entradas del módulo eks_cluster
+  cluster_version           = var.eks_cluster_version
+  node_group_instance_types = var.eks_node_group_instance_types
+  node_group_desired_size   = var.eks_node_group_desired_size
+  node_group_min_size       = var.eks_node_group_min_size
+  node_group_max_size       = var.eks_node_group_max_size
 }
 
 # --- 6. Desplegar Add-ons de Kubernetes ---
