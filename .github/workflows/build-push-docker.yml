@@ -52,7 +52,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::ACCOUNT_ID:role/YOUR_GITHUB_ACTIONS_ROLE_NAME # <-- REEMPLAZA CON TU ARN DE ROL
+          role-to-assume: arn:aws:iam::643683863124:role/GH_ACTIONS # <-- REEMPLAZA CON TU ARN DE ROL
           aws-region: us-west-2 # Or your region variable
 
       # 3. Sets up Helm
