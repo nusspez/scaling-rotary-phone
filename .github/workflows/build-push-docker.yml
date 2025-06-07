@@ -68,7 +68,7 @@ jobs:
       # 5. Deploys the application using Helm
       - name: Deploy application with Helm
         run: |
-          helm upgrade --install hello-release ./hello_world/helm-charts/hello-grainchain/ \ # <-- ¡RUTA CORREGIDA AQUÍ!
+          helm upgrade --install hello-release ./hello_world/helm-charts/hello-grainchain/ \
             --namespace default \
             --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/hello-grainchain \
             --set image.tag=${{ github.sha }} \
