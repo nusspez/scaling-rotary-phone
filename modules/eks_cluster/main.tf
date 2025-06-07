@@ -12,10 +12,10 @@ module "eks" {
   eks_managed_node_groups = {
     main_nodes = {
       name           = "${var.project_name}-ng"
-      instance_types = var.node_group_instance_types # <-- ¡CORREGIDO! Antes era var.eks_node_group_instance_types
-      min_size       = var.node_group_min_size       # <-- ¡CORREGIDO! Antes era var.eks_node_group_min_size
-      max_size       = var.node_group_max_size       # <-- ¡CORREGIDO! Antes era var.eks_node_group_max_size
-      desired_size   = var.node_group_desired_size   # <-- ¡CORREGIDO! Antes era var.eks_node_group_desired_size
+      instance_types = var.node_group_instance_types 
+      min_size       = var.node_group_min_size      
+      max_size       = var.node_group_max_size       
+      desired_size   = var.node_group_desired_size   
 
       # Aquí puedes añadir más configuraciones como etiquetas, taints, etc.
     }
