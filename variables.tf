@@ -78,20 +78,33 @@ variable "app_server_instance_type" {
 }
 
 # --- Variables del Módulo EKS Cluster ---
+
 variable "eks_cluster_version" {
   description = "Versión de Kubernetes para el clúster EKS."
   type        = string
-  default     = "1.29"
+  default     = "1.29" # O un default si lo quieres tener aquí.
 }
 
 variable "eks_node_group_instance_types" {
   description = "Tipos de instancia para el grupo de nodos de EKS."
   type        = list(string)
-  default     = ["t3.medium"]
+  default     = ["t3.medium"] # <-- Esto es lo que necesitas para tu requisito
 }
 
 variable "eks_node_group_desired_size" {
   description = "Número deseado de nodos en el grupo de EKS."
   type        = number
-  default     = 2
+  default     = 2 # <-- Esto es lo que necesitas para tu requisito
+}
+
+variable "eks_node_group_min_size" {
+  description = "Tamaño mínimo de los nodos en el grupo de EKS."
+  type        = number
+  default     = 1
+}
+
+variable "eks_node_group_max_size" {
+  description = "Tamaño máximo de los nodos en el grupo de EKS."
+  type        = number
+  default     = 3
 }
